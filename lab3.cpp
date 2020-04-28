@@ -157,7 +157,7 @@ void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 }
 
 HANDLE createMyThread(DWORD& ThreadID, DWORD ThreadProc(LPVOID)) {
-	HANDLE ret = CreateThread(NULL, 0, ThreadProc,NULL, 0, &ThreadID);
+	HANDLE ret = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProc,NULL, 0, &ThreadID);
 
 	if (ret == NULL)
 	{
