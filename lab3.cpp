@@ -11,7 +11,7 @@ HANDLE aThread[THREADCOUNT];
 const char threadName[11] = { 'a','b','c','d','e','f','g','h','i','k','m' };
 
 void PrintAndCompute(int threadName, bool isSynchronized, int nextThread);
-HANDLE createMyThread(DWORD& ThreadID, DWORD ThreadProc(LPVOID));
+HANDLE createMyThread(DWORD& ThreadID, DWORD WINAPI ThreadProc(LPVOID));
 
 DWORD WINAPI thread_a(LPVOID);
 DWORD WINAPI thread_b(LPVOID);
