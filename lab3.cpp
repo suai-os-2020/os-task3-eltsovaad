@@ -29,7 +29,7 @@ DWORD WINAPI thread_m(LPVOID);
 // lab3 code should be located here!
 //
 
-using namespace std;
+//using namespace std;
 
 unsigned int lab3_thread_graph_id()
 {
@@ -67,7 +67,7 @@ int lab3_init()
 			NULL);          // unnamed semaphore           // безымянный семафор
 		if (ghSemaphore[i] == NULL)
 		{
-			cout << "CreateSemaphore error: " << GetLastError() << endl;
+			std::cout << "CreateSemaphore error: " << GetLastError() << std::endl;
 			return 1;
 		}
 	}
@@ -77,7 +77,7 @@ int lab3_init()
 		1,            // increase count by one            // увеличиваем значение счетчика на единицу
 		NULL))       // not interested in previous count // игнорируем предыдущее значение счетчика
 	{
-		cout << "ReleaseSemaphore " << threadName[i] << " error: " << GetLastError() << endl;
+		std::cout << "ReleaseSemaphore " << threadName[i] << " error: " << GetLastError() << std::endl;
 	}
 	
 
@@ -99,7 +99,7 @@ int lab3_init()
 	/*for (i = 0; i < THREADCOUNT; i++)
 	{
 		if (aThread[i] = NULL) {
-			cout << "CreateThread " << threadName[i] << " error: " << GetLastError() << endl;
+			std::cout << "CreateThread " << threadName[i] << " error: " << GetLastError() << std::endl;
 			return 1;
 		}
 	}*/
@@ -137,11 +137,11 @@ void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 			dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);           // zero-second time-out interval // нулевое время ожидания
 		}
 		if (dwWaitResult == WAIT_OBJECT_0) {
-			cout << threadName[threadNumber];
+			std::cout << threadName[threadNumber];
 			computation();
 			if ((nextThread != -1) && (isSynchronized)) {
 				if (!ReleaseSemaphore(ghSemaphore[nextThread], 1, NULL)){
-					cout << "ReleaseSemaphore error: " << GetLastError() << endl;
+					std::cout << "ReleaseSemaphore error: " << GetLastError() << std::endl;
 				}
 			}
 		}
@@ -149,7 +149,7 @@ void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 	if ((nextThread != -1) && (!isSynchronized)) {
 		if (!ReleaseSemaphore(ghSemaphore[nextThread], 1, NULL))
 		{
-			cout << "ReleaseSemaphore " << threadName[nextThread] << " error: " << GetLastError() << endl;
+			std::cout << "ReleaseSemaphore " << threadName[nextThread] << " error: " << GetLastError() << std::endl;
 		}
 	}
 
@@ -161,7 +161,7 @@ HANDLE createMyThread(DWORD& ThreadID, DWORD ThreadProc(LPVOID)) {
 
 	if (ret == NULL)
 	{
-		cout << "CreateThread error: " << GetLastError() << endl;
+		std::cout << "CreateThread error: " << GetLastError() << std::endl;
 		return NULL;
 	}
 	return ret;
@@ -202,19 +202,19 @@ DWORD WINAPI thread_e(LPVOID lpParam) {
 	PrintAndCompute(4, true, 1);
 	if (!ReleaseSemaphore(ghSemaphore[3], 1, NULL))
 	{
-		cout << "ReleaseSemaphore " << threadName[3] << " error: " << GetLastError() << endl;
+		std::cout << "ReleaseSemaphore " << threadName[3] << " error: " << GetLastError() << std::endl;
 	}
 	if (!ReleaseSemaphore(ghSemaphore[4], 1, NULL))
 	{
-		cout << "ReleaseSemaphore " << threadName[4] << " error: " << GetLastError() << endl;
+		std::cout << "ReleaseSemaphore " << threadName[4] << " error: " << GetLastError() << std::endl;
 	}
 	if (!ReleaseSemaphore(ghSemaphore[5], 1, NULL))
 	{
-		cout << "ReleaseSemaphore " << threadName[5] << " error: " << GetLastError() << endl;
+		std::cout << "ReleaseSemaphore " << threadName[5] << " error: " << GetLastError() << std::endl;
 	}
 	if (!ReleaseSemaphore(ghSemaphore[6], 1, NULL))
 	{
-		cout << "ReleaseSemaphore " << threadName[6] << " error: " << GetLastError() << endl;
+		std::cout << "ReleaseSemaphore " << threadName[6] << " error: " << GetLastError() << std::endl;
 	}
 	PrintAndCompute(4, false, 6);
 	return TRUE;
