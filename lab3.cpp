@@ -138,8 +138,8 @@ int lab3_init()
 	// Close thread and semaphore handles
 	// Закрываем потоки и дескриптор семафора
 
-	//for (i = 0; i < THREADCOUNT; i++)
-		CloseHandle(aThread[0]);
+	for (i = 0; i < THREADCOUNT; i++)
+		CloseHandle(aThread[i]);
 	for (i = 0; i < THREADCOUNT; i++)
 		CloseHandle(ghSemaphore[i]);
 	CloseHandle(ghMutex);
