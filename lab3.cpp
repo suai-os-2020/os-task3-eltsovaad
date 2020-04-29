@@ -7,6 +7,8 @@
 
 HANDLE ghSemaphore[11];
 HANDLE aThread[THREADCOUNT];
+HANDLE ghMutex;
+
 
 const char threadName[11] = { 'a','b','c','d','e','f','g','h','i','k','m' };
 
@@ -54,7 +56,12 @@ int lab3_init()
 	
 	DWORD ThreadID;
 	int i;
-
+	ghMutex = CreateMutex(NULL,	FALSE, 	NULL); 
+	if (ghMutex == NULL)
+	{
+		std::cout << "CreateMutex error: "<< GetLastError()<<std::endl;
+		return 1;
+	}
 	// Create a semaphore with initial and max counts of MAX_SEM_COUNT
 	// Создание семафора с начальным и максимальным значениями счетчика равными MAX_SEM_COUNT
 
@@ -121,12 +128,13 @@ int lab3_init()
 		CloseHandle(aThread[0]);
 	for (i = 0; i < THREADCOUNT; i++)
 		CloseHandle(ghSemaphore[i]);
+	//system("pause");
 	return 0;
 }
 
 void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 {
-	DWORD dwWaitResult;
+	DWORD dwWaitResult, mutexWaitResult;
 
 	if (!isSynchronized) {
 		dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);    
@@ -137,11 +145,15 @@ void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 			dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);           // zero-second time-out interval // нулевое время ожидания
 		}
 		if (dwWaitResult == WAIT_OBJECT_0) {
-			std::cout << threadName[threadNumber];
-			computation();
-			if ((nextThread != -1) && (isSynchronized)) {
-				if (!ReleaseSemaphore(ghSemaphore[nextThread], 1, NULL)){
-					std::cout << "ReleaseSemaphore error: " << GetLastError() << std::endl;
+			mutexWaitResult = WaitForSingleObject(ghMutex, INFINITE);
+			if (mutexWaitResult == WAIT_OBJECT_0) {
+				std::cout << threadName[threadNumber];
+				ReleaseMutex(ghMutex);
+				computation();
+				if ((nextThread != -1) && (isSynchronized)) {
+					if (!ReleaseSemaphore(ghSemaphore[nextThread], 1, NULL)) {
+						std::cout << "ReleaseSemaphore error: " << GetLastError() << std::endl;
+					}
 				}
 			}
 		}
