@@ -68,11 +68,20 @@ int lab3_init()
 
 	for (i = 0; i < THREADCOUNT; i++)
 	{
-		ghSemaphore[i] = CreateSemaphore(
-			NULL,           // default security attributes // аттрибуты безопасности по умолчанию
-			0,  // initial count               // начальное значение счетчика
-			MAX_SEM_COUNT,  // maximum count               // максимаьлное значение счетчика
-			NULL);          // unnamed semaphore           // безымянный семафор
+		if (i == 1) {
+			ghSemaphore[i] = CreateSemaphore(
+				NULL,           // default security attributes // аттрибуты безопасности по умолчанию
+				0,  // initial count               // начальное значение счетчика
+				4,  // maximum count               // максимаьлное значение счетчика
+				NULL);          // unnamed semaphore           // безымянный семафор
+		}
+		else {
+			ghSemaphore[i] = CreateSemaphore(
+				NULL,           // default security attributes // аттрибуты безопасности по умолчанию
+				0,  // initial count               // начальное значение счетчика
+				MAX_SEM_COUNT,  // maximum count               // максимаьлное значение счетчика
+				NULL);          // unnamed semaphore           // безымянный семафор
+		}
 		if (ghSemaphore[i] == NULL)
 		{
 			std::cout << "CreateSemaphore error: " << GetLastError() << std::endl;
