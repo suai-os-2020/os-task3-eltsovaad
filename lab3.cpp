@@ -8,6 +8,7 @@
 HANDLE ghSemaphore[11];
 HANDLE aThread[THREADCOUNT];
 HANDLE ghMutex;
+bool synchronizeIsEntered = false;
 
 
 const char threadName[11] = { 'a','b','c','d','e','f','g','h','i','k','m' };
@@ -79,12 +80,16 @@ int lab3_init()
 		}
 	}
 	
-	if (!ReleaseSemaphore(
-		ghSemaphore[0],  // handle to semaphore              // дескриптор семафора
-		1,            // increase count by one            // увеличиваем значение счетчика на единицу
-		NULL))       // not interested in previous count // игнорируем предыдущее значение счетчика
-	{
-		std::cout << "ReleaseSemaphore " << threadName[i] << " error: " << GetLastError() << std::endl;
+	for (i = 0; i < 5; i++) {
+		if (i != 1) {
+			if (!ReleaseSemaphore(
+				ghSemaphore[i],  // handle to semaphore              // дескриптор семафора
+				1,            // increase count by one            // увеличиваем значение счетчика на единицу
+				NULL))       // not interested in previous count // игнорируем предыдущее значение счетчика
+			{
+				std::cout << "ReleaseSemaphore " << threadName[i] << " error: " << GetLastError() << std::endl;
+			}
+		}
 	}
 	
 
@@ -142,7 +147,13 @@ void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 	}
 	for (int i = 0; i < 3; i++) {
 		if (isSynchronized) {
-			dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);           // zero-second time-out interval // нулевое время ожидания
+			dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);
+			if ((threadNumber == 1)&&(!synchronizeIsEntered)) {
+				synchronizeIsEntered = true;
+				dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);
+				dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);
+				dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);
+			}
 		}
 		if (dwWaitResult == WAIT_OBJECT_0) {
 			mutexWaitResult = WaitForSingleObject(ghMutex, INFINITE);
@@ -181,7 +192,7 @@ HANDLE createMyThread(DWORD& ThreadID, DWORD WINAPI ThreadProc(LPVOID)) {
 
 DWORD WINAPI thread_a(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
-	PrintAndCompute(0, false, 2);
+	PrintAndCompute(0, false, 1);
 	return TRUE;
 }
 DWORD WINAPI thread_b(LPVOID lpParam) {
@@ -192,14 +203,14 @@ DWORD WINAPI thread_b(LPVOID lpParam) {
 DWORD WINAPI thread_c(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
 	//WaitForSingleObject(aThread[0], INFINITE);
-	PrintAndCompute(2, false, 3);
+	PrintAndCompute(2, false, 1);
 	PrintAndCompute(2, true, 3);
 	return TRUE;
 }
 DWORD WINAPI thread_d(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
 	//WaitForSingleObject(aThread[2], INFINITE);
-	PrintAndCompute(3, false, 4);
+	PrintAndCompute(3, false, 1);
 	PrintAndCompute(3, true, 4);
 	PrintAndCompute(3, false, 3);
 	WaitForSingleObject(aThread[4], INFINITE);
