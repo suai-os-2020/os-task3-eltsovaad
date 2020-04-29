@@ -204,7 +204,7 @@ DWORD WINAPI thread_d(LPVOID lpParam) {
 	PrintAndCompute(3, false, 3);
 	WaitForSingleObject(aThread[4], INFINITE);
 	WaitForSingleObject(aThread[5], INFINITE);
-	PrintAndCompute(3, false, 9);
+	PrintAndCompute(3, false, -1);
 	return TRUE;
 }
 DWORD WINAPI thread_e(LPVOID lpParam) {
@@ -254,7 +254,7 @@ DWORD WINAPI thread_i(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
 	WaitForSingleObject(aThread[5], INFINITE);
 	WaitForSingleObject(aThread[4], INFINITE);
-	PrintAndCompute(8, false, -1);
+	PrintAndCompute(8, false, 9);
 	WaitForSingleObject(aThread[3], INFINITE);
 	WaitForSingleObject(aThread[7], INFINITE);
 	PrintAndCompute(8, false, 10);
@@ -264,6 +264,7 @@ DWORD WINAPI thread_k(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
 	WaitForSingleObject(aThread[6], INFINITE);
 	WaitForSingleObject(aThread[7], INFINITE);
+	WaitForSingleObject(aThread[3], INFINITE);
 	PrintAndCompute(9, false, -1);
 	return TRUE;
 }
