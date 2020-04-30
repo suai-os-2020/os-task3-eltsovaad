@@ -140,7 +140,7 @@ int lab3_init()
 	for (i = 0; i < THREADCOUNT; i++)
 		CloseHandle(ghSemaphore[i]);
 	CloseHandle(ghMutex);
-	system("pause");
+	//system("pause");
 	return 0;
 }
 
