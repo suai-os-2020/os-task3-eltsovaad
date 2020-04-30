@@ -69,18 +69,15 @@ int lab3_init()
 	for (i = 0; i < THREADCOUNT; i++)
 	{
 		if (i == 1) {
-			ghSemaphore[i] = CreateSemaphore(
-				NULL,           // default security attributes // аттрибуты безопасности по умолчанию
-				0,  // initial count               // начальное значение счетчика
-				4,  // maximum count               // максимаьлное значение счетчика
-				NULL);          // unnamed semaphore           // безымянный семафор
+			ghSemaphore[i] = CreateSemaphore(NULL,	0,  4,  NULL);  
 		}
 		else {
-			ghSemaphore[i] = CreateSemaphore(
-				NULL,           // default security attributes // аттрибуты безопасности по умолчанию
-				0,  // initial count               // начальное значение счетчика
-				MAX_SEM_COUNT,  // maximum count               // максимаьлное значение счетчика
-				NULL);          // unnamed semaphore           // безымянный семафор
+			if ((i == 8) || (i == 7)) {
+				ghSemaphore[i] = CreateSemaphore(NULL, 0, 2, NULL);
+			}
+			else {
+				ghSemaphore[i] = CreateSemaphore(NULL, 0, MAX_SEM_COUNT, NULL);
+			}
 		}
 		if (ghSemaphore[i] == NULL)
 		{
@@ -143,7 +140,7 @@ int lab3_init()
 	for (i = 0; i < THREADCOUNT; i++)
 		CloseHandle(ghSemaphore[i]);
 	CloseHandle(ghMutex);
-	//system("pause");
+	system("pause");
 	return 0;
 }
 
@@ -153,7 +150,9 @@ void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 
 	if (!isSynchronized) {
 		dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);    
-		// zero-second time-out interval // нулевое время ожидания
+		if ((threadNumber == 7) || (threadNumber == 8)) {
+			dwWaitResult = WaitForSingleObject(ghSemaphore[threadNumber], INFINITE);
+		}
 	}
 	for (int i = 0; i < 3; i++) {
 		if (isSynchronized) {
@@ -169,7 +168,10 @@ void PrintAndCompute(int threadNumber, bool isSynchronized, int nextThread)
 			mutexWaitResult = WaitForSingleObject(ghMutex, INFINITE);
 			if (mutexWaitResult == WAIT_OBJECT_0) {
 				std::cout << threadName[threadNumber];
-				ReleaseMutex(ghMutex);
+				if (!ReleaseMutex(ghMutex))
+				{
+					std::cout << "ReleaseMutex error: " << GetLastError() << std::endl;
+				}
 				computation();
 				if ((nextThread != -1) && (isSynchronized)) {
 					if (!ReleaseSemaphore(ghSemaphore[nextThread], 1, NULL)) {
@@ -222,10 +224,23 @@ DWORD WINAPI thread_d(LPVOID lpParam) {
 	//WaitForSingleObject(aThread[2], INFINITE);
 	PrintAndCompute(3, false, 1);
 	PrintAndCompute(3, true, 4);
-	PrintAndCompute(3, false, 3);
+	PrintAndCompute(3, false, -1);
 	WaitForSingleObject(aThread[4], INFINITE);
 	WaitForSingleObject(aThread[5], INFINITE);
+	if (!ReleaseSemaphore(ghSemaphore[7], 1, NULL))
+	{
+		std::cout << "ReleaseSemaphore " << threadName[7] << " error: " << GetLastError() << std::endl;
+	}
+	if (!ReleaseSemaphore(ghSemaphore[6], 1, NULL))
+	{
+		std::cout << "ReleaseSemaphore " << threadName[6] << " error: " << GetLastError() << std::endl;
+	}
+	if (!ReleaseSemaphore(ghSemaphore[8], 1, NULL))
+	{
+		std::cout << "ReleaseSemaphore " << threadName[8] << " error: " << GetLastError() << std::endl;
+	}
 	PrintAndCompute(3, false, -1);
+	
 	return TRUE;
 }
 DWORD WINAPI thread_e(LPVOID lpParam) {
@@ -249,18 +264,31 @@ DWORD WINAPI thread_e(LPVOID lpParam) {
 	{
 		std::cout << "ReleaseSemaphore " << threadName[6] << " error: " << GetLastError() << std::endl;
 	}
-	PrintAndCompute(4, false, 6);
+	PrintAndCompute(4, false, -1);
 	return TRUE;
 }
 DWORD WINAPI thread_f(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
-	PrintAndCompute(5, false, 7);
+	PrintAndCompute(5, false, -1);
 	return TRUE;
 }
 DWORD WINAPI thread_g(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
 	PrintAndCompute(6, false, 8);
 	WaitForSingleObject(aThread[5], INFINITE);
+	WaitForSingleObject(aThread[4], INFINITE);
+	if (!ReleaseSemaphore(ghSemaphore[7], 1, NULL))
+	{
+		std::cout << "ReleaseSemaphore " << threadName[7] << " error: " << GetLastError() << std::endl;
+	}
+	if (!ReleaseSemaphore(ghSemaphore[8], 1, NULL))
+	{
+		std::cout << "ReleaseSemaphore " << threadName[8] << " error: " << GetLastError() << std::endl;
+	}
+	if (!ReleaseSemaphore(ghSemaphore[3], 1, NULL))
+	{
+		std::cout << "ReleaseSemaphore " << threadName[3] << " error: " << GetLastError() << std::endl;
+	}
 	PrintAndCompute(6, false, -1);
 	return TRUE;
 }
@@ -277,6 +305,7 @@ DWORD WINAPI thread_i(LPVOID lpParam) {
 	WaitForSingleObject(aThread[4], INFINITE);
 	PrintAndCompute(8, false, 9);
 	WaitForSingleObject(aThread[3], INFINITE);
+	WaitForSingleObject(aThread[6], INFINITE);
 	WaitForSingleObject(aThread[7], INFINITE);
 	PrintAndCompute(8, false, 10);
 	return TRUE;
