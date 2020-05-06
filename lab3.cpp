@@ -8,7 +8,7 @@
 HANDLE ghSemaphore[11];
 HANDLE aThread[THREADCOUNT];
 HANDLE ghMutex;
-bool synchronizeIsEntered = false;
+bool synchronizeIsEntered;
 
 
 const char threadName[11] = { 'a','b','c','d','e','f','g','h','i','k','m' };
@@ -54,7 +54,7 @@ const char* lab3_sequential_threads()
 
 int lab3_init()
 {
-	
+	synchronizeIsEntered = false;
 	DWORD ThreadID;
 	int i;
 	ghMutex = CreateMutex(NULL,	FALSE, 	NULL); 
