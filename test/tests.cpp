@@ -420,6 +420,8 @@ TEST(lab3_tests, concurrency) {
         // EXPECT_EQ(unsynchronized_err.length(), 0) << unsynchronized_err << std::endl << "Output is: " << outs.str();
         if (sequential_err.length() > 0 || unsynchronized_err.length() > 0)
             err_messages.push_back(err_ss.str());
+        if (i % 20 == 0)
+            std::cout << "Completed " << i << " out of 100 runs." << std::endl;
     }
     EXPECT_TRUE(is_random) << "It seems that there is no real concurrency going on. "
                            << "Either fix the code or try the test again.";
