@@ -166,15 +166,17 @@ std::vector< std::string > get_interval_contents(std::string output_str, std::ve
     // find out the length of a thread
     int thread_length = get_thread_length(output_str, solution);
     size_t pos = 0;
-    // iterate through solution intervals and cut a corresponding portion of output
-    for (size_t i = 0; i < solution.size(); ++i) {
-        //
-        int interval_length = solution.at(i).length() * thread_length;
-        interval_contents.push_back(output_str.substr(pos, interval_length));
-        pos += interval_length;
+    if (thread_length > 0) {
+        // iterate through solution intervals and cut a corresponding portion of output
+        for (size_t i = 0; i < solution.size(); ++i) {
+            //
+            int interval_length = solution.at(i).length() * thread_length;
+            interval_contents.push_back(output_str.substr(pos, interval_length));
+            pos += interval_length;
+        }
+        if (pos < output_str.length())
+            interval_contents.push_back(output_str.substr(pos, std::string::npos));
     }
-    if (pos < output_str.length())
-        interval_contents.push_back(output_str.substr(pos, std::string::npos));
     return interval_contents;
 }
 
@@ -443,4 +445,3 @@ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
