@@ -274,7 +274,7 @@ DWORD WINAPI thread_f(LPVOID lpParam) {
 }
 DWORD WINAPI thread_g(LPVOID lpParam) {
 	UNREFERENCED_PARAMETER(lpParam);
-	PrintAndCompute(6, false, 8);
+	PrintAndCompute(6, false, -1);
 	WaitForSingleObject(aThread[5], INFINITE);
 	WaitForSingleObject(aThread[4], INFINITE);
 	if (!ReleaseSemaphore(ghSemaphore[7], 1, NULL))
@@ -289,7 +289,7 @@ DWORD WINAPI thread_g(LPVOID lpParam) {
 	{
 		std::cout << "ReleaseSemaphore " << threadName[3] << " error: " << GetLastError() << std::endl;
 	}
-	PrintAndCompute(6, false, -1);
+	PrintAndCompute(6, false, 8);
 	return TRUE;
 }
 DWORD WINAPI thread_h(LPVOID lpParam) {
